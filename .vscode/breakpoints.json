@@ -1,0 +1,653 @@
+[
+  {
+    "location": "/pretrain_bert.py",
+    "line": [
+      {
+        "line": 155,
+        "character": 0
+      },
+      {
+        "line": 155,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/training.py",
+    "line": [
+      {
+        "line": 137,
+        "character": 0
+      },
+      {
+        "line": 137,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/initialize.py",
+    "line": [
+      {
+        "line": 43,
+        "character": 0
+      },
+      {
+        "line": 43,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/global_vars.py",
+    "line": [
+      {
+        "line": 99,
+        "character": 0
+      },
+      {
+        "line": 99,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/initialize.py",
+    "line": [
+      {
+        "line": 231,
+        "character": 0
+      },
+      {
+        "line": 231,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/core/parallel_state.py",
+    "line": [
+      {
+        "line": 263,
+        "character": 0
+      },
+      {
+        "line": 263,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/core/parallel_state.py",
+    "line": [
+      {
+        "line": 291,
+        "character": 0
+      },
+      {
+        "line": 291,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/initialize.py",
+    "line": [
+      {
+        "line": 105,
+        "character": 0
+      },
+      {
+        "line": 105,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/training.py",
+    "line": [
+      {
+        "line": 118,
+        "character": 0
+      },
+      {
+        "line": 118,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/training.py",
+    "line": [
+      {
+        "line": 283,
+        "character": 0
+      },
+      {
+        "line": 283,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/pretrain_bert.py",
+    "line": [
+      {
+        "line": 30,
+        "character": 0
+      },
+      {
+        "line": 30,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/language_model.py",
+    "line": [
+      {
+        "line": 149,
+        "character": 0
+      },
+      {
+        "line": 149,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/language_model.py",
+    "line": [
+      {
+        "line": 358,
+        "character": 0
+      },
+      {
+        "line": 358,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/language_model.py",
+    "line": [
+      {
+        "line": 367,
+        "character": 0
+      },
+      {
+        "line": 367,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 874,
+        "character": 0
+      },
+      {
+        "line": 874,
+        "character": 0
+      }
+    ],
+    "enabled": true,
+    "condition": "layer_number = 1"
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 328,
+        "character": 0
+      },
+      {
+        "line": 328,
+        "character": 0
+      }
+    ],
+    "enabled": true,
+    "condition": "layer_number = 1"
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 591,
+        "character": 0
+      },
+      {
+        "line": 591,
+        "character": 0
+      }
+    ],
+    "enabled": true,
+    "condition": "layer_number = 1"
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 551,
+        "character": 0
+      },
+      {
+        "line": 551,
+        "character": 0
+      }
+    ],
+    "enabled": true,
+    "condition": "layer_number = 1"
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 902,
+        "character": 0
+      },
+      {
+        "line": 902,
+        "character": 0
+      }
+    ],
+    "enabled": true,
+    "condition": "layer_number = 1"
+  },
+  {
+    "location": "/megatron/model/language_model.py",
+    "line": [
+      {
+        "line": 394,
+        "character": 0
+      },
+      {
+        "line": 394,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 522,
+        "character": 0
+      },
+      {
+        "line": 522,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 1563,
+        "character": 0
+      },
+      {
+        "line": 1563,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 1576,
+        "character": 0
+      },
+      {
+        "line": 1576,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/language_model.py",
+    "line": [
+      {
+        "line": 412,
+        "character": 0
+      },
+      {
+        "line": 412,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/bert_model.py",
+    "line": [
+      {
+        "line": 162,
+        "character": 0
+      },
+      {
+        "line": 162,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/core/distributed/distributed_data_parallel.py",
+    "line": [
+      {
+        "line": 50,
+        "character": 0
+      },
+      {
+        "line": 50,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/training.py",
+    "line": [
+      {
+        "line": 341,
+        "character": 0
+      },
+      {
+        "line": 341,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/training.py",
+    "line": [
+      {
+        "line": 407,
+        "character": 0
+      },
+      {
+        "line": 407,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/optimizer/__init__.py",
+    "line": [
+      {
+        "line": 74,
+        "character": 0
+      },
+      {
+        "line": 74,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/training.py",
+    "line": [
+      {
+        "line": 159,
+        "character": 0
+      },
+      {
+        "line": 159,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/pretrain_bert.py",
+    "line": [
+      {
+        "line": 51,
+        "character": 0
+      },
+      {
+        "line": 51,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/bert_model.py",
+    "line": [
+      {
+        "line": 152,
+        "character": 0
+      },
+      {
+        "line": 152,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/language_model.py",
+    "line": [
+      {
+        "line": 66,
+        "character": 0
+      },
+      {
+        "line": 66,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/language_model.py",
+    "line": [
+      {
+        "line": 386,
+        "character": 0
+      },
+      {
+        "line": 386,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 1448,
+        "character": 0
+      },
+      {
+        "line": 1448,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 1537,
+        "character": 0
+      },
+      {
+        "line": 1537,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 1537,
+        "character": 0
+      },
+      {
+        "line": 1537,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 1538,
+        "character": 0
+      },
+      {
+        "line": 1538,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 1539,
+        "character": 0
+      },
+      {
+        "line": 1539,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 1470,
+        "character": 0
+      },
+      {
+        "line": 1470,
+        "character": 0
+      }
+    ],
+    "enabled": true,
+    "condition": "layer_number=1"
+  },
+  {
+    "location": "/megatron/model/transformer.py",
+    "line": [
+      {
+        "line": 535,
+        "character": 0
+      },
+      {
+        "line": 535,
+        "character": 0
+      }
+    ],
+    "enabled": true,
+    "condition": "layer_number = 1"
+  },
+  {
+    "location": "/megatron/model/language_model.py",
+    "line": [
+      {
+        "line": 415,
+        "character": 0
+      },
+      {
+        "line": 415,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/training.py",
+    "line": [
+      {
+        "line": 321,
+        "character": 0
+      },
+      {
+        "line": 321,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/training.py",
+    "line": [
+      {
+        "line": 326,
+        "character": 0
+      },
+      {
+        "line": 326,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/training.py",
+    "line": [
+      {
+        "line": 403,
+        "character": 0
+      },
+      {
+        "line": 403,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  },
+  {
+    "location": "/megatron/training.py",
+    "line": [
+      {
+        "line": 413,
+        "character": 0
+      },
+      {
+        "line": 413,
+        "character": 0
+      }
+    ],
+    "enabled": true
+  }
+]
