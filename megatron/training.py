@@ -89,7 +89,7 @@ def pretrain(train_valid_test_dataset_provider,
         1) initialize Megatron.
         2) setup model, optimizer and lr schedule using the model_provider.
         3) call train_val_test_data_provider to get train/val/test datasets.
-        4) train the modle using the forward_step_func.
+        4) train the model using the forward_step_func.
 
     Arguments:
         train_valid_test_dataset_provider: a function that takes the size of
@@ -259,7 +259,8 @@ def get_model(model_provider_func, model_type=ModelType.encoder_or_decoder, wrap
             this_model.model_type = model_type
             model.append(this_model)
     else:
-        pre_process = mpu.is_pipeline_first_stage()
+        # Booleans to store wether the device has the first or last stage to perform preprocess/postprocess
+        pre_process = mpu.is_pipeline_first_stage() 
         post_process = mpu.is_pipeline_last_stage()
         add_encoder = True
         add_decoder = True

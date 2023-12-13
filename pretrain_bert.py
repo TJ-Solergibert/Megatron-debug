@@ -68,7 +68,7 @@ def get_batch(data_iterator):
             'is_random', 'loss_mask', 'padding_mask']
     datatype = torch.int64
 
-    # Broadcast data.
+    # Broadcast data. Only rank 0 tensor parallel processes gets the data
     if data_iterator is not None:
         data = next(data_iterator)
     else:

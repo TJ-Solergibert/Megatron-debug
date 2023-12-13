@@ -1,5 +1,5 @@
 <h1 align="center">
-<p>Inside Megatron
+<p>Inside Megatron 🔍 🔧
 </h1>
 
 In this project, we delve into Megatron, the well-known NVIDIA project for training LLMs. We will fundamentally analyze the following: 
@@ -20,7 +20,7 @@ We will be able to use the VSCode debugger inside a Docker container (the recomm
 <!-- omit in toc -->
 # Analysis
 ## 3D Parallelism: Communication Setup
-In [`megatron/core/parallel_state.py`](megatron/core/parallel_state.py) we have the `initialize_model_parallel` function which creates all the model data parallel groups. From the following example they provide: 
+In [`megatron/core/parallel_state.py`](https://github.com/TJ-Solergibert/Megatron-debug/blob/319409607371f9e7da11809d9a27779a9ba63914/megatron/core/parallel_state.py#L94) we have the `initialize_model_parallel` function which creates all the model data parallel groups. From the following example they provide: 
 > Let's say we have a total of 16 GPUs denoted by g0 ... g15 and we use 2 GPUs to parallelize the model tensor, and 4 GPUs to parallelize the model pipeline. The present function will create 8 tensor model-parallel groups, 4 pipeline model-parallel groups and 8 data-parallel groups as:
 >
 >   8 data_parallel groups:

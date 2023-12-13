@@ -166,7 +166,7 @@ def find_checkpoint_rank_0(checkpoints_path, iteration, release=False):
 
 def get_checkpoint_tracker_filename(checkpoints_path):
 
-    """Tracker file rescords the latest chckpoint during
+    """Tracker file records the latest checkpoint during
     training to restart from."""
     return os.path.join(checkpoints_path, 'latest_checkpointed_iteration.txt')
 
