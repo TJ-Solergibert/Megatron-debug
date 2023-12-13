@@ -8,12 +8,32 @@ In this project, we delve into Megatron, the well-known NVIDIA project for train
 3. How training is carried out. We will analyze the forward and backward steps
 4. Other utilities it incorporates, such as W&B logging or the Analysis tool to estimate memory requirements and communications
 
+<!-- omit in toc -->
+# Setup
+
 We will use the VSCode debugger for the analysis. Inside the `.vscode` folder, we include:
 - `launch.json`: Configuration file for debugging Python code
 - `breakpoints.json`: File generated with the VSCode [_BreakpointIO_](https://marketplace.visualstudio.com/items?itemName=deckerio.breakpointio) extension to store and load VSCode debugger breakpoints
 
+We will be able to use the VSCode debugger inside a Docker container (the recommended way by NVIDIA to run Megatron) easily with the [_Docker_ extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) for VSCode. It will also be necessary to install the VSCode extensions ([_Python_](https://marketplace.visualstudio.com/items?itemName=ms-python.python) and [_BreakpointIO_](https://marketplace.visualstudio.com/items?itemName=deckerio.breakpointio)) within the container.
+
 <!-- omit in toc -->
 # Analysis
+## 3D Parallelism: Communication Setup
+In [`megatron/core/parallel_state.py`](megatron/core/parallel_state.py) we have the `initialize_model_parallel` function which creates all the model data parallel groups. From the following example they provide: 
+> Let's say we have a total of 16 GPUs denoted by g0 ... g15 and we use 2 GPUs to parallelize the model tensor, and 4 GPUs to parallelize the model pipeline. The present function will create 8 tensor model-parallel groups, 4 pipeline model-parallel groups and 8 data-parallel groups as:
+>
+>   8 data_parallel groups:
+>         [g0, g2], [g1, g3], [g4, g6], [g5, g7], [g8, g10], [g9, g11], [g12, g14], [g13, g15] 
+>
+>   8 tensor model-parallel groups:
+>         [g0, g1], [g2, g3], [g4, g5], [g6, g7], [g8, g9], [g10, g11], [g12, g13], [g14, g15]
+>
+>   4 pipeline model-parallel groups:
+>         [g0, g4, g8, g12], [g1, g5, g9, g13], [g2, g6, g10, g14], [g3, g7, g11, g15]
+
+We obtain the following device placement in a setup with 4 nodes and 4 GPUs per node. The plane symbolizes the division of the two data parallel models, with 8 gpus each. As we can see, the tensor parallel groups are always on the same node. Also, note the placement of the data parallel groups on the same node to accelerate the communications of the all-reduce algorithm.
+<img src="./images/3DParallelism.png">
 
 <!-- omit in toc -->
 Below is Megatron-LM's original README.
