@@ -1,3 +1,23 @@
+<h1 align="center">
+<p>Inside Megatron
+</h1>
+
+In this project, we delve into Megatron, the well-known NVIDIA project for training LLMs. We will fundamentally analyze the following: 
+1. The different levels of parallelism: Data, pipeline, tensor, and sequence parallelism. How and why these levels of parallelism are created and the communications they carry out
+2. The creation of models. What they are composed of and how we could add new models
+3. How training is carried out. We will analyze the forward and backward steps
+4. Other utilities it incorporates, such as W&B logging or the Analysis tool to estimate memory requirements and communications
+
+We will use the VSCode debugger for the analysis. Inside the `.vscode` folder, we include:
+- `launch.json`: Configuration file for debugging Python code
+- `breakpoints.json`: File generated with the VSCode [_BreakpointIO_](https://marketplace.visualstudio.com/items?itemName=deckerio.breakpointio) extension to store and load VSCode debugger breakpoints
+
+<!-- omit in toc -->
+# Analysis
+
+<!-- omit in toc -->
+Below is Megatron-LM's original README.
+------
 Megatron ([1](https://arxiv.org/pdf/1909.08053.pdf), [2](https://arxiv.org/pdf/2104.04473.pdf), and [3](https://arxiv.org/pdf/2205.05198)) is a large, powerful transformer developed by the Applied Deep Learning Research team at NVIDIA. This repository is for ongoing research related to training large transformer language models at scale. We developed efficient, model-parallel ([tensor](https://arxiv.org/pdf/1909.08053.pdf), [sequence](https://arxiv.org/pdf/2205.05198), and [pipeline](https://arxiv.org/pdf/2104.04473.pdf)), and multi-node pre-training of transformer based models such as [GPT](https://arxiv.org/abs/2005.14165), [BERT](https://arxiv.org/pdf/1810.04805.pdf), and [T5](https://arxiv.org/abs/1910.10683) using mixed precision.
 
 Below are some of the projects where we have directly used Megatron:
@@ -31,34 +51,35 @@ The following table shows both model (MFU) and hardware (HFU) FLOPs utilization 
 | 1T    | 56.3% | 57.0% |
 
 # Contents
-   * [Contents](#contents)
-   * [Setup](#setup)
-      * [Downloading Checkpoints](#downloading-checkpoints)
-   * [Usage](#usage)
-   * [Training](#training)
-      * [Data Preprocessing](#data-preprocessing)
-      * [BERT Pretraining](#bert-pretraining)
-      * [GPT Pretraining](#gpt-pretraining)
-      * [T5 Pretraining](#t5-pretraining)
-      * [Distributed Pretraining](#distributed-pretraining)
-      * [Activation Checkpointing and Recomputation](#activation-checkpointing-and-recomputation)
-      * [Distributed Optimizer](#distributed-optimizer)
-      * [FlashAttention](#flashattention)
-      * [GPT-3 Example](#gpt-3-example)
-      * [Retro](#retro)
-   * [Evaluation and Tasks](#evaluation-and-tasks)
-      * [GPT Text Generation](#gpt-text-generation)
-      * [GPT Evaluation](#gpt-evaluation)
-         * [WikiText Perplexity Evaluation](#wikitext-perplexity-evaluation)
-         * [LAMBADA Cloze Accuracy](#lambada-cloze-accuracy)
-      * [BERT Task Evaluation](#bert-task-evaluation)
-         * [RACE Evaluation](#race-evaluation)
-         * [MNLI Evaluation](#mnli-evaluation)
-      * [Llama-2 Inference and Finetuning](#llama-2-inference-and-finetuning)
-   * [Datasets](#datasets)
-      * [Collecting Wikipedia Training Data](#collecting-wikipedia-training-data)
-      * [Collecting GPT Webtext Data](#collecting-gpt-webtext-data)
-   * [Reproducibility](#reproducibility)
+- [Contents](#contents)
+- [Setup](#setup)
+  - [Downloading Checkpoints](#downloading-checkpoints)
+- [Usage](#usage)
+- [Training](#training)
+  - [Data Preprocessing](#data-preprocessing)
+  - [BERT Pretraining](#bert-pretraining)
+  - [GPT Pretraining](#gpt-pretraining)
+  - [T5 Pretraining](#t5-pretraining)
+  - [Distributed Pretraining](#distributed-pretraining)
+  - [Activation Checkpointing and Recomputation](#activation-checkpointing-and-recomputation)
+  - [Distributed Optimizer](#distributed-optimizer)
+  - [FlashAttention](#flashattention)
+  - [GPT-3 Example](#gpt-3-example)
+  - [Retro](#retro)
+- [Evaluation and Tasks](#evaluation-and-tasks)
+  - [GPT Text Generation](#gpt-text-generation)
+    - [Detoxify GPT via Self-generation](#detoxify-gpt-via-self-generation)
+  - [GPT Evaluation](#gpt-evaluation)
+    - [WikiText Perplexity Evaluation](#wikitext-perplexity-evaluation)
+    - [LAMBADA Cloze Accuracy](#lambada-cloze-accuracy)
+  - [BERT Task Evaluation](#bert-task-evaluation)
+    - [RACE Evaluation](#race-evaluation)
+    - [MNLI Evaluation](#mnli-evaluation)
+  - [Llama-2 Inference and Finetuning](#llama-2-inference-and-finetuning)
+- [Datasets](#datasets)
+  - [Collecting Wikipedia Training Data](#collecting-wikipedia-training-data)
+  - [Collecting GPT Webtext Data](#collecting-gpt-webtext-data)
+- [Reproducibility](#reproducibility)
 
 # Setup
 We strongly recommend using the latest release of [NGC's PyTorch container](https://ngc.nvidia.com/catalog/containers/nvidia:pytorch) with DGX nodes. If you can't use this for some reason, use the latest pytorch, cuda, nccl, and NVIDIA [APEX](https://github.com/NVIDIA/apex#quick-start) releases.  Data preprocessing requires [NLTK](https://www.nltk.org/install.html), though this is not required for training, evaluation, or downstream tasks.
