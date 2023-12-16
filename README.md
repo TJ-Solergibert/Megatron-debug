@@ -35,38 +35,44 @@ In [`megatron/core/parallel_state.py`](https://github.com/TJ-Solergibert/Megatro
 
 We obtain the following device placement in a setup with 4 nodes and 4 GPUs per node. 
 <img src="./images/3DParallelism.png">
+
 The plane symbolizes the division of the two data parallel models, with 8 gpus each. As we can see, the tensor parallel groups are always on the same node. Also, note the placement of the data parallel groups on the same node to accelerate the communications of the all-reduce algorithm.
 
 Taking GPU 0 as an example, GPUs 0 and 1 belong to the same tensor parallel group, so operations are splitted between them. GPU 0 has a pipeline parallel group with GPUs 4, 8, and 12, as the output of one becomes the input of the next. Finally, it forms the data parallel group with GPU 2, which has exactly the same parameters, and they exchange gradients to update them.
 
 ## Model Setup
-In `pretrain_bert.py`, we find the `model_provider` function, which all processes will call, indicating whether they belong to the first or last rank of the pipeline to include the embedding or output layers. Each process will create its own BertModel **only** with the layers that belong to it based on their order in the pipeline.
+In `pretrain_bert.py`, we find the `model_provider` function, which all processes will call, indicating whether they belong to the first or last rank of the pipeline to include the embedding or output layers. Each process will create its own BertModel **only** with the layers that belong to it based on their position in the pipeline.
 ### Embeddings
 If the process is the first in the pipeline, it should include the Embedding Layer. It is defined in [`megatron/model/language_model.py`](https://github.com/TJ-Solergibert/Megatron-debug/blob/22e0922af07bddcc2c0607be2be9e501816bafb6/megatron/model/language_model.py#L120), and the most relevant details are:
 - Word embeddings are processed in parallel within the tensor parallel group. To achieve this, it uses the VocabParallelEmbedding module, which handles dividing the work across the vocabulary dimension.
 - Conversely, position embeddings are processed serially.
 ### Transformer Layers
-The transformer layers are layers that we can stack since their input and output dimensions are the same (_[sequence length, batch size, hidden size]_). First, each process will calculate the number of layers it needs to create based on the defined number of layers, the pipeline parallel size, and the type of model. In our case, we have a Bert (encoder) with 12 layers and only 1 pipeline stage, so we will build all the layers. In the case of having more pipeline stages, we would distribute these 12 layers among the stages, each one obtaining a contiguous set of layers.
+Transformer layers are stacked since their input and output dimensions are the same (_[sequence length, batch size, hidden size]_). First, each process will calculate the number of layers it needs to create based on the defined number of layers, the pipeline parallel size, and the type of model. In our case, we have a Bert (encoder) with 12 layers and only 1 pipeline stage, so we will build all the layers. In the case of having more pipeline stages, we would distribute these 12 layers among the stages, each one obtaining a contiguous set of layers.
 
 <img src="./images/Transformer_Layer.png">
 
 #### Layer Norm
-The Layer Norm layer is actually the [`FastLayerNormFN`](https://github.com/TJ-Solergibert/Megatron-debug/blob/22e0922af07bddcc2c0607be2be9e501816bafb6/megatron/model/fused_layer_norm.py#L86) from the Apex package. This operation is performed in parallel withing the tensor parallel group by splitting the tensors across the sequence dimension (_sequence parallelism_).
+The Layer Norm layer is actually the [`FastLayerNormFN`](https://github.com/TJ-Solergibert/Megatron-debug/blob/22e0922af07bddcc2c0607be2be9e501816bafb6/megatron/model/fused_layer_norm.py#L86) from the Apex package. This operation is performed in parallel withing the tensor parallel group by splitting the tensors across the sequence dimension (_sequence parallelism_, check Section 4.2.2 of [[3]](https://arxiv.org/pdf/2205.05198)).
 
 #### Self Attention + Linear
-This phase is carried out by dividing matrix multiplications into columns and rows across the members of the tensor parallel groups (_tensor parallelism_). First, we calculate the hidden size per attention head and divide the total number of heads by the number of devices in the tensor parallel group.
+This phase is carried out by dividing matrix multiplications into columns and rows across the members of the tensor parallel groups (_tensor parallelism_, check Section 3 of [[1]](https://arxiv.org/pdf/1909.08053.pdf)). First, we calculate the hidden size per attention head and divide the total number of heads by the number of devices in the tensor parallel group.
 
 <img src="./images/Self-Attention_Linear.png">
 
 After we will do the following:
-1. To compute the query, key, values each tensor parallel rank will have its own `tensor_parallel.ColumnParallelLinear` layer. This layer will contain the split of columns from the Q, K, and V matrices relevant to each tensor parallel rank.
+1. To compute the query, key, values each tensor parallel rank will have its own [`tensor_parallel.ColumnParallelLinear`](https://github.com/TJ-Solergibert/Megatron-debug/blob/92ad4c98b2634d674f64c12cbe45671768f2ccfd/megatron/core/tensor_parallel/layers.py#L534) layer. This layer will contain the split of columns from the Q, K, and V matrices relevant to each tensor parallel rank.
 2. To perform the attention, we will use a `CoreAttention` module. This module contains optimized CUDA kernels to accelerate the scaling, mask and softmax operations. 
-3. To compute the the linear layer, we will split the operations between the tensor parallel ranks in rows with the `tensor_parallel.RowParallelLinear` layer. 
+3. To compute the the linear layer, we will split the operations between the tensor parallel ranks in rows with the [`tensor_parallel.RowParallelLinear`](https://github.com/TJ-Solergibert/Megatron-debug/blob/92ad4c98b2634d674f64c12cbe45671768f2ccfd/megatron/core/tensor_parallel/layers.py#L767) layer. 
 
 #### Linear Layers
 <img src="./images/MLP.png">
 
 This operation is also splitted among the tensor parallel group. We will use a `tensor_parallel.ColumnParallelLinear` to project the dimension from _h_ to _4h_ and a `tensor_parallel.RowParallelLinear` layer to project back to _h_. 
+
+## Training
+Once we have created all the communication groups, the model, optimizer, and datasets, we can finally begin the training of the model.
+
+Megatron distinguishes between 3 different configurations to carry out the forward and backward pass during training, depending on whether we have pipeline parallelism or not and if we run an interleaved 1F1B schedule or not (check Section 2.2 of [[2]](https://arxiv.org/pdf/2104.04473.pdf)). In this project, since we only have one GPU, we will analyze the simplest case without pipelining ([`forward_backward_no_pipelining`](https://github.com/TJ-Solergibert/Megatron-debug/blob/92ad4c98b2634d674f64c12cbe45671768f2ccfd/megatron/core/pipeline_parallel/schedules.py#L283)).
 
 <!-- omit in toc -->
 Below is Megatron-LM's original README.

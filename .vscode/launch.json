@@ -18,7 +18,7 @@
                       "--num-attention-heads", "16",
                       "--seq-length", "512",
                       "--max-position-embeddings", "512",
-                      "--micro-batch-size", "8",
+                      "--micro-batch-size", "4",
                       "--global-batch-size", "8",
                       "--lr", "0.0001",
                       "--train-iters", "20000",
