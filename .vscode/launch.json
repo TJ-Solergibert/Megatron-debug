@@ -5,17 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Bert Debug",
             "type": "python",
             "request": "launch",
             "env": {
                 "CUDA_DEVICE_MAX_CONNECTIONS": "1",
-                //"RANK": "0",
-                //"WORLD_SIZE": "1"
             },
             "module": "torch.distributed.run",
-            //"program": "${file}",
-            "args" : ["/workspace/megatron/pretrain_bert.py", "--num-layers", "12",
+            "args" : ["/workspace/megatron/pretrain_bert.py", 
+                      "--num-layers", "12",
                       "--hidden-size", "1024",
                       "--num-attention-heads", "16",
                       "--seq-length", "512",
@@ -23,7 +21,7 @@
                       "--micro-batch-size", "8",
                       "--global-batch-size", "8",
                       "--lr", "0.0001",
-                      "--train-iters", "2000",
+                      "--train-iters", "20000",
                       "--lr-decay-iters", "990000",
                       "--lr-decay-style", "linear",
                       "--min-lr", "0.00001",
@@ -31,23 +29,22 @@
                       "--lr-warmup-fraction", ".01",
                       "--clip-grad", "1.0",
                       "--fp16", 
-                      "--use-flash-attn",
 
                       "--data-path", "/workspace/dataset/europarl/europarl-bert_text_sentence",
                       "--vocab-file", "/workspace/checkpoints/BERT-345M-uncased/bert-large-uncased-vocab.txt",
                       "--split", "949,50,1",
 
                       "--log-interval", "100",
-                      "--save-interval", "10000",
-                      "--eval-interval", "200",
+                      "--save-interval", "500",
+                      "--eval-interval", "500",
                       "--eval-iters", "10",
                       "--log-throughput",
 
-                      "--save", "/workspace/checkpoints/KK",
-                      "--load", "/workspace/checkpoints/KK",
+                      "--save", "/workspace/checkpoints/debug",
+                      "--load", "/workspace/checkpoints/debug",
         ],
             "console": "integratedTerminal",
-            "justMyCode": false
+            "justMyCode": true
         }
     ]
 }
