@@ -55,14 +55,14 @@ Transformer layers are stacked since their input and output dimensions are the s
 The Layer Norm layer is actually the [`FastLayerNormFN`](https://github.com/TJ-Solergibert/Megatron-debug/blob/22e0922af07bddcc2c0607be2be9e501816bafb6/megatron/model/fused_layer_norm.py#L86) from the Apex package. This operation is performed in parallel withing the tensor parallel group by splitting the tensors across the sequence dimension (_sequence parallelism_, check Section 4.2.2 of [[3]](https://arxiv.org/pdf/2205.05198)).
 
 #### Self Attention + Linear
-This phase is carried out by dividing matrix multiplications into columns and rows across the members of the tensor parallel groups (_tensor parallelism_, check Section 3 of [[1]](https://arxiv.org/pdf/1909.08053.pdf)). First, we calculate the hidden size per attention head and divide the total number of heads by the number of devices in the tensor parallel group.
+This phase is carried out by dividing matrix multiplications into columns and rows across the members of the tensor parallel groups (_tensor parallelism_, check Section 3 of [[1]](https://arxiv.org/pdf/1909.08053.pdf)). First, we calculate the hidden size per attention head. 
 
 <img src="./images/Self-Attention_Linear.png">
 
-After we will do the following:
-1. To compute the query, key, values each tensor parallel rank will have its own [`tensor_parallel.ColumnParallelLinear`](https://github.com/TJ-Solergibert/Megatron-debug/blob/92ad4c98b2634d674f64c12cbe45671768f2ccfd/megatron/core/tensor_parallel/layers.py#L534) layer. This layer will contain the split of columns from the Q, K, and V matrices relevant to each tensor parallel rank.
+After, we will do the following:
+1. To compute the query, key, values each tensor parallel rank will have its own [`tensor_parallel.ColumnParallelLinear`](https://github.com/TJ-Solergibert/Megatron-debug/blob/92ad4c98b2634d674f64c12cbe45671768f2ccfd/megatron/core/tensor_parallel/layers.py#L534) layer. This layer will contain the split of columns from the Q, K, and V matrices relevant to each tensor parallel rank. This is done by dividing the expected output size with the tensor parallel group world size.
 2. To perform the attention, we will use a `CoreAttention` module. This module contains optimized CUDA kernels to accelerate the scaling, mask and softmax operations. 
-3. To compute the the linear layer, we will split the operations between the tensor parallel ranks in rows with the [`tensor_parallel.RowParallelLinear`](https://github.com/TJ-Solergibert/Megatron-debug/blob/92ad4c98b2634d674f64c12cbe45671768f2ccfd/megatron/core/tensor_parallel/layers.py#L767) layer. 
+3. To compute the the linear layer, we will split the operations between the tensor parallel ranks in rows with the [`tensor_parallel.RowParallelLinear`](https://github.com/TJ-Solergibert/Megatron-debug/blob/92ad4c98b2634d674f64c12cbe45671768f2ccfd/megatron/core/tensor_parallel/layers.py#L767) layer. Unlike the `tensor_parallel.ColumnParallelLinear` layer, this time the output size will be the hidden size, but the input will be this same dimension divided by the tensor parallel group world size.
 
 #### Linear Layers
 <img src="./images/MLP.png">
@@ -72,7 +72,7 @@ This operation is also splitted among the tensor parallel group. We will use a `
 ## Training
 Once we have created all the communication groups, the model, optimizer, and datasets, we can finally begin the training of the model.
 
-Megatron distinguishes between 3 different configurations to carry out the forward and backward pass during training, depending on whether we have pipeline parallelism or not and if we run an interleaved 1F1B schedule or not (check Section 2.2 of [[2]](https://arxiv.org/pdf/2104.04473.pdf)). In this project, since we only have one GPU, we will analyze the simplest case without pipelining ([`forward_backward_no_pipelining`](https://github.com/TJ-Solergibert/Megatron-debug/blob/92ad4c98b2634d674f64c12cbe45671768f2ccfd/megatron/core/pipeline_parallel/schedules.py#L283)).
+Megatron distinguishes between 3 different configurations to carry out the forward and backward pass during training, depending on whether we have pipeline parallelism and if we run an interleaved 1F1B schedule or not (check Section 2.2 of [[2]](https://arxiv.org/pdf/2104.04473.pdf)). First, we will analyze the simplest case without pipelining ([`forward_backward_no_pipelining`](https://github.com/TJ-Solergibert/Megatron-debug/blob/92ad4c98b2634d674f64c12cbe45671768f2ccfd/megatron/core/pipeline_parallel/schedules.py#L283)).
 
 <!-- omit in toc -->
 Below is Megatron-LM's original README.
