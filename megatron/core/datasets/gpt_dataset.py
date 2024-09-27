@@ -239,7 +239,7 @@ class GPTDataset(MegatronDataset):
                 self._goldfish_hash_table = _create_hash_table(device=labels.device)
 
             # Apply the goldfish mask
-            labels = apply_goldfish(
+            goldfish_labels = apply_goldfish(
                 labels,
                 goldfish_token_id=self._goldfish_token_id,
                 k=self._goldfish_k,
@@ -247,7 +247,7 @@ class GPTDataset(MegatronDataset):
                 goldfish_context_width=self._goldfish_h ,
             )
 
-            loss_mask[labels == self._goldfish_token_id] = 0.0
+            loss_mask[goldfish_labels == self._goldfish_token_id] = 0.0
 
         # Batch padding sequence so we mask the loss
         if idx is None:
@@ -322,6 +322,7 @@ class GPTDataset(MegatronDataset):
                 sample_parts.append(
                     self.dataset.get(self.document_index[i], offset=offset, length=length)
                 )
+            # assert len(sample_parts[1]) == 8192 # NOTE(tj.solergibert) Goldfish dummy assertion by TJ
         assert len(document_ids) == len(
             sample_parts
         ), f"len(document_ids) ({len(document_ids)}) != len(sample_parts) ({len(sample_parts)})"
@@ -684,7 +685,7 @@ def _get_ltor_masks_and_position_ids(
 
         torch.Tensor: The position ID's of the token
     """
-     = data.numel() #seq_length decimal, total number of elements in data
+    seq_length = data.numel() #seq_length decimal, total number of elements in data
 
     if create_attention_mask:
         attention_mask = torch.tril(
