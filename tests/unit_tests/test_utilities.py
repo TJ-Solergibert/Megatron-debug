@@ -4,17 +4,25 @@ from datetime import timedelta
 import torch
 from torch._C._distributed_c10d import PrefixStore
 from torch.distributed import rendezvous
-from torch.distributed.distributed_c10d import _store_based_barrier
 
 import megatron.core.parallel_state as ps
 
 
 class TestModel(torch.nn.Module):
-    def __init__(self, input_dim: int, output_dim: int, num_layers: int, bias: bool):
+    def __init__(
+        self,
+        input_dim: int,
+        output_dim: int,
+        num_layers: int,
+        bias: bool,
+        shared_embedding: bool = False,
+    ):
         super().__init__()
         self.layers = torch.nn.ModuleList(
             [torch.nn.Linear(input_dim, output_dim, bias) for _ in range(num_layers)]
         )
+        if shared_embedding:
+            self.layers[-1].weight.shared_embedding = True
 
 
 class Utils:
@@ -25,24 +33,11 @@ class Utils:
     store = None
 
     @staticmethod
-    def barrier():
-        group_name = os.environ.get('PYTEST_CURRENT_TEST')
-        if " " in group_name:
-            group_name = group_name.split(" ")[0]
-
-        _store_based_barrier(
-            rank=Utils.rank,
-            store=Utils.store,
-            group_name=os.environ.get('PYTEST_CURRENT_TEST'),
-            rendezvous_count=Utils.world_size,
-            timeout=timedelta(minutes=2),
-        )
-
-    @staticmethod
     def initialize_distributed():
         if not torch.distributed.is_initialized() and Utils.rank >= 0:
             print(
-                f'Initializing torch.distributed with rank: {Utils.rank}, world_size: {Utils.world_size}'
+                f'Initializing torch.distributed with rank: {Utils.rank}, '
+                f'world_size: {Utils.world_size}'
             )
             torch.cuda.set_device(Utils.rank % torch.cuda.device_count())
             init_method = 'tcp://'
@@ -61,13 +56,10 @@ class Utils:
             Utils.store = store
 
             torch.distributed.init_process_group(
-                backend='nccl',
-                world_size=Utils.world_size,
-                rank=Utils.rank,
-                store=store,
+                backend='nccl', world_size=Utils.world_size, rank=Utils.rank, store=store
             )
 
-            Utils.barrier()
+            torch.distributed.barrier()
         Utils.inited = True
 
     @staticmethod
@@ -90,7 +82,7 @@ class Utils:
     def destroy_model_parallel():
         if not Utils.inited:
             return
-        Utils.barrier()
+        torch.distributed.barrier()
         ps.destroy_model_parallel()
         Utils.inited = False
 

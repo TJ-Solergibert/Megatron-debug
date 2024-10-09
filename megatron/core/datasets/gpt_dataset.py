@@ -122,11 +122,9 @@ class GPTDataset(MegatronDataset):
         except Exception:
             self._pad_token_id = _PAD_TOKEN_ID
 
-        (
-            self.document_index,
-            self.sample_index,
-            self.shuffle_index,
-        ) = self._build_document_sample_shuffle_indices()
+        (self.document_index, self.sample_index, self.shuffle_index) = (
+            self._build_document_sample_shuffle_indices()
+        )
 
         if self.config.goldfish_loss:
             self._goldfish_k = self.config.goldfish_k

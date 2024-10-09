@@ -102,22 +102,28 @@ def model_provider(
             add_decoder=add_decoder,
         )
     else:
-        if args.transformer_impl == "local":
-            en_block_spec = get_t5_encoder_with_local_block_spec(args.encoder_num_layers)
-            de_block_spec = get_t5_decoder_with_local_block_spec(args.decoder_num_layers)
-        elif args.transformer_impl == "transformer_engine":
-            en_block_spec = get_t5_encoder_with_transformer_engine_block_spec(
-                args.encoder_num_layers
-            )
-            de_block_spec = get_t5_decoder_with_transformer_engine_block_spec(
-                args.decoder_num_layers
-            )
-
         encoder_config = deepcopy(config)
         encoder_config.num_layers = args.encoder_num_layers
+
         if args.pipeline_model_parallel_size > 1:
             assert args.encoder_pipeline_model_parallel_size > 0, "Need to know how to shard the encoder & decoder."
+
+        if args.encoder_pipeline_model_parallel_size > 0:
             encoder_config.pipeline_model_parallel_size = args.encoder_pipeline_model_parallel_size
+
+        encoder_layers_per_pipeline = encoder_config.num_layers // encoder_config.pipeline_model_parallel_size
+        decoder_layers_per_pipeline = config.num_layers // config.pipeline_model_parallel_size
+
+        if args.transformer_impl == "local":
+            en_block_spec = get_t5_encoder_with_local_block_spec(encoder_layers_per_pipeline)
+            de_block_spec = get_t5_decoder_with_local_block_spec(decoder_layers_per_pipeline)
+        elif args.transformer_impl == "transformer_engine":
+            en_block_spec = get_t5_encoder_with_transformer_engine_block_spec(
+                encoder_layers_per_pipeline
+            )
+            de_block_spec = get_t5_decoder_with_transformer_engine_block_spec(
+                decoder_layers_per_pipeline
+            )
 
         print_rank_0('building T5 model ...')
         model = T5Model(
@@ -213,6 +219,7 @@ def train_valid_test_datasets_provider(train_val_test_num_samples: int):
             get_blend_from_list(args.valid_data_path),
             get_blend_from_list(args.test_data_path)
         ],
+        renormalize_blend_weights=args.renormalize_blend_weights,
         split=args.split,
         path_to_cache=args.data_cache_path,
         tokenizer=tokenizer,
